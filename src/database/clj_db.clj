@@ -7,7 +7,7 @@
 (def connect (mg/connect))
 
 ;;connect to tourpediadb
-(def db (mg/get-db connect "tourpediadb"))
+(def db (mg/get-db connect "beerdb"))
 
 
 ;;insert data for an admin into db
