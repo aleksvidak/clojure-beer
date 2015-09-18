@@ -1,2 +1,2 @@
-cmdhistory=["(pprint data)" "(use '(incanter core stats charts io))" "my-robot" "(my-robot)" "(view (cm/fetch-dataset \:beer-data))" "<type clojure code here>" "(sq 5)"]
+cmdhistory=["(pprint data)" "(use '(incanter core stats charts io))" "my-robot" "(my-robot)" "(view (cm/fetch-dataset \:beer-data))" "<type clojure code here>" "(sq 5)" "my-beer" "beer-data" "(beer-data)" "beer-data" "1" "(.stop server)" "(.start server)" "(.stop server)" "(.start server)" "<type clojure code here>" "(.stop server)" "(.start server)" "server" "(server)" "(beer-routes)" "(jetty/stop server)"]
 eclipse.preferences.version=1
