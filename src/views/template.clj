@@ -25,6 +25,7 @@
   (GET "/login" [] (get-page "public/login.html" sample-post))
   (GET "/forgot" [] (get-page "public/forgotpass.html" sample-post))
   (GET "/registration" [] (get-page "public/registration.html" sample-post))
+  (GET "/index" [] (get-page "public/index.html" sample-post))
   (route/resources "/")
   (route/not-found "<h1>Page not found</h1>")
   )
