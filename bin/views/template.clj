@@ -21,6 +21,8 @@
 
 ;;(reduce str (template-page sample-post))
 
+
+;;routing
 (defroutes beer-routes
   (GET "/login" [] (get-page "public/login.html" sample-post))
   (GET "/forgot" [] (get-page "public/forgotpass.html" sample-post))
