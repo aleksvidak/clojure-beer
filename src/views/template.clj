@@ -27,9 +27,8 @@
   (GET "/login" [] (get-page "public/login.html" sample-post))
   (GET "/forgot" [] (get-page "public/forgotpass.html" sample-post))
   (GET "/registration" [] (get-page "public/registration.html" sample-post))
-  (GET "/index" [] (get-page "public/index.html" sample-post))
+  (POST "/index" [] (get-page "public/index.html" sample-post))
   (route/resources "/")
-  (route/not-found "<h1>Page not found</h1>")
-  )
+  (route/not-found "<h1>Page not found</h1>"))
 
 (defonce server (jetty/run-jetty #'beer-routes {:port 8080 :join false}))

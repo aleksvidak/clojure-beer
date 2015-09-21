@@ -85,14 +85,17 @@
                             {:_id false
                              :review_profileName true})))))
 
-;;get cleaned data
-;;work to do!!!!!!!!!!!!
-(defn get-all-reviews []
-  (for [u allusers] (apply hash-map 
+;;get cleaned data for n users
+;;transformation needed
+(defn get-all-reviews [n]
+  "Return n user reviews (beer & score pairs for n users)."
+  (for [u (take n allusers)] 
+    (hash-map u 
+      (apply hash-map 
          (flatten (map vals 
                        (cm/fetch :beer_data :only
                                  {:_id false 
                                   :beer_name true 
                                   :review_overall true} 
                                  :where 
-                                 {:review_profileName u}))))))
+                                 {:review_profileName u})))))))

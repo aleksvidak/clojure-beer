@@ -24,7 +24,7 @@
 
 ;;count euclidean-distance between two users, taken into account 
 ;;overall marks for beers that both users reviewed
-;;d(p,q)=∑i=1n(pi−qi)2−−−−−−−−−−√
+;;d(p,q)=n∑i=√1/(pi−qi)2−−−−−−−−−−
 ;;
 (defn euclidean-distance [person1 person2]
   "Get euclidean distance for two specified persons (usernames)."
@@ -40,6 +40,19 @@
 
 
 ;;test
-;;(euclidean-distance (csv/get-reviews-by-user "MadeInOregon") (csv/get-reviews-by-user "rawthar"))
+;;(euclidean-distance (csv/get-reviews-by-user "johnmichaelsen") (csv/get-reviews-by-user "stcules"))
 
+;;anonymous function with two params, the second is destructured
+(defn compare-user-to-others [data person]
+  (reduce (fn[k v]
+    (let [name (first v)
+          score (second v)
+          similarity (euclidean-distance person score)]
+              (assoc k name similarity) )) {} data))
 
+;;return similar users to one supplied, from limited dataset
+(defn similar-users [data person]
+  (sort-by second (compare-user-to-others data person)))
+
+;;test
+;;(similar-users (into {}(get-all-reviews 5)) (get-reviews-by-user "stcules"))
