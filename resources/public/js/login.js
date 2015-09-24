@@ -17,8 +17,8 @@
 	// Validation
   $("#login-form").validate({
   	rules: {
-      lg_username: "required",
-  	  lg_password: "required",
+      username: "required",
+  	  password: "required",
     },
   	errorClass: "form-invalid"
   });

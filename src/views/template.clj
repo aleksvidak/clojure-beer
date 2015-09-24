@@ -1,34 +1,59 @@
 (ns views.template
   (:use (compojure handler
-                   [core :only (GET POST defroutes)]))
-  (require [net.cgrand.enlive-html :as html]
-           [ring.adapter.jetty :as jetty]
-           [compojure.route :as route]))
+                   [core :only (GET POST ANY defroutes) :as compojure]))
+  (:require [net.cgrand.enlive-html :as html]
+            [ring.adapter.jetty]
+            [ring.util.response :as resp]
+            [compojure.route :as route]
+            [compojure.handler :as handler]
+            [cemerick.friend :as friend]
+            [cemerick.friend.credentials :as creds]
+            [cemerick.friend.workflows :as workflows]
+            [server.clj-db :as users :refer (local-users)]
+            [input.csv-dataset :as ds]))
 
+
+(def test {:a 1 :b 3 :c 3})
 ;; Define the template
-(defn get-page [page post]
-  (html/deftemplate template-page page
-  [post]
-  [:title] (html/content (:title post))
-  [:h1] (html/content (:title post))
-  [:span.author] (html/content (:author post))
-  [:div.post-body] (html/content (:body post))))
+  (html/deftemplate template-page "public/index.html"
+  
+  [tes]
+  [:title] (html/content  "Welcome to beer rating site.")
+  [:ul.beers [:li html/first-of-type]] (html/clone-for [a tes]
+                                                 [:li :a] (html/content a)))
 
 ;; Some sample data
 (def sample-post {:author "Aleksandar Vidakovic"
-                  :title "Clojure TourPedia"
-                  :body "Functional programming!"})
+                  :title "Clojure Beer"
+                  :content "Functional programming!"})
 
 ;;(reduce str (template-page sample-post))
 
 
 ;;routing
 (defroutes beer-routes
-  (GET "/login" [] (get-page "public/login.html" sample-post))
-  (GET "/forgot" [] (get-page "public/forgotpass.html" sample-post))
-  (GET "/registration" [] (get-page "public/registration.html" sample-post))
-  (POST "/index" [] (get-page "public/index.html" sample-post))
+  (GET "/" request 
+       (friend/authorize #{::users/user} (template-page test)))
+ (GET "/admin" request
+       "Login" )
+  (GET "/login" [] (template-page (map keys (ds/get-all-reviews 1))))
   (route/resources "/")
+  (friend/logout (ANY "/logout" request (resp/redirect "/login")))
   (route/not-found "<h1>Page not found</h1>"))
 
-(defonce server (jetty/run-jetty #'beer-routes {:port 8080 :join false}))
+
+(def app
+  (handler/site
+   (friend/authenticate beer-routes
+   			{:allow-anon? true
+         :default-landing-uri "/"                                      
+         :credential-fn #(creds/bcrypt-credential-fn @local-users %)
+         :workflows [(workflows/interactive-form)]})))
+
+
+(defonce server (ring.adapter.jetty/run-jetty #'app {:port 8080 :join? false}))
+
+(.stop server)
+
+(.start server)
+(map vals (ds/get-all-reviews 5))

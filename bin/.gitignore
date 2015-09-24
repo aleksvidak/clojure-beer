@@ -1,7 +1,4 @@
 /views/
-/public/
-/login.css
-/login.js
-/input/
-/clojure_beer/
 /database/
+/public/
+/input/

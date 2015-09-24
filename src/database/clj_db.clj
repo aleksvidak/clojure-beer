@@ -1,5 +1,6 @@
 (ns server.clj-db
-   (:require [somnium.congomongo :as cm]))
+   (:require [somnium.congomongo :as cm]
+             [cemerick.friend.credentials :as creds]))
 
 ;;define connection to db beerdb 
 (def connection
@@ -9,37 +10,58 @@
 
 ;;set connection globally
 (cm/set-connection! connection)
+(cm/set-write-concern connection :strict)
 
+
+;;change keywords to strings, because of cemerick.friend required formated data
+(defn string-keys [m]
+  (into (empty m) (for [[k v] m] [(name k) v])))
+
+;;fetch users from database
+;;not working!!!!!!!!
+(def users (atom 
+             (string-keys 
+               (for [x (keys (into {} (cm/fetch :users :only {:_id false})))]
+                 (assoc-in (into {} 
+                               (cm/fetch :users :only {:_id false})) [x :roles] #{::user})))))
+
+(derive ::admin ::user)
+
+;;initial admin username "admin", password "pass"
 (defn insert-admin []
-  (cm/insert! :users
-           {:fullname "John Doe" :username "John" :password "Doe" :email "aleksandar.v90@gmail.com" :role "admin"}))
+  (cm/insert! :users 
+              {"admin" {:username "admin"
+                            :password (creds/hash-bcrypt "pass")
+                            :roles #{"admin"}}}))
 
-;;check if user exists in the db
-(defn user-exists? [username]
-  (if (= 1 (cm/fetch-count :users :where {:username username})) true false))
+
+;;check if user exists in fetched users
+(defn user-exists? [username] 
+  (if (not= 0 (count 
+                (filter not-empty 
+                        (cm/fetch :users :only {:_id false (keyword username) true})))) true false))
+
+
   
 ;;insert data for the user into db - collection users
-;;initial admin username "John", password "Doe"
-(defn insert-user [fullname username password email role]
+(defn insert-user [username password roles]
   "Insert new user under condition that there isn't another one with same username."
   (if-not (user-exists? username)
     (cm/insert! :users
-           {:fullname fullname :username username :password password :email email :role role})))
+           {username {:username username
+                            :password (creds/hash-bcrypt password)
+                            :roles #{roles}}})))
 
-;;get all admins in users collection 
-(defn get-all-admins []
-  (cm/fetch :users :where
-            {:role "admin"}))
 
 ;;get all users in users collection 
 (defn get-all-users []
-  (cm/fetch :users :where
-            {:role "user"}))
+  (string-keys 
+               (assoc-in (into {} 
+                               (cm/fetch :users :only {:_id false})) [:user :roles] #{::user})))
 
 ;;get user by supplied username
 (defn get-user [username]
-  (cm/fetch :users :where
-            {:username username}))
+  (filter not-empty (cm/fetch :users :only {:_id false (keyword username) true})))
 
 ;;delete user with supplied username
 (defn delete-user [username]
@@ -51,6 +73,22 @@
 (defn disconnect [conn]
   "Disconnect from database."
   (cm/close-connection conn))
+
+
+
+(def local-users (atom {"user" {:username "user"
+                            :password (creds/hash-bcrypt "pass")
+                            :roles #{::user}}
+                  "admin" {:username "admin"
+                                  :password (creds/hash-bcrypt "pass")
+                                  :roles #{::admin}}}))
+
+(derive ::admin ::user)
+
+
+
+
+
 
 
 

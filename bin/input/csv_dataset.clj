@@ -87,7 +87,7 @@
 
 ;;get cleaned data for n users
 ;;transformation needed
-(defn get-all-reviews [n]
+(defn get-n-user-reviews [n]
   "Return n user reviews (beer & score pairs for n users)."
   (for [u (take n allusers)] 
     (hash-map u 
@@ -99,3 +99,6 @@
                                   :review_overall true} 
                                  :where 
                                  {:review_profileName u})))))))
+
+(defn insert-new-review [username beer score]
+  (cm/insert! :beer_data {:review_profileName username :beer_name beer :review_overall score}))
