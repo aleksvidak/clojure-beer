@@ -6,22 +6,28 @@
 
 ;;read dataset from .csv; delimiter is comma
 (def data
-  (read-dataset
-    "xaa.csv"
-     :header true :delim \,))
+  (io/read-dataset
+   "xaa.csv"
+   :header true :delim \,))
 
 ;;view cols names
-(col-names data)
+(core/col-names data)
 
 ;;view number of rows & cols
-(dim data)
-(view data)
+(core/dim data)
+;;(core/view data)
 
-;;open connection to db beerdb 
-(cm/mongo! :db "beerdb")
+;;define connection to db beerdb 
+(def connection
+  (cm/make-connection "beerdb"
+                     :host "127.0.0.1"
+                     :port 27017))
 
+;;set connection globally
+(cm/set-connection! connection)
+(cm/set-write-concern connection :strict)
 ;;insert dataset read from .csv file
-(cm/mass-insert! :beer-data (:rows data))
+(dorun (cm/mass-insert! :beer_data (:rows data)))
 
 ;;retrieving inserted dataset
 (def beer-data (db/fetch-dataset :beer_data))
@@ -84,6 +90,13 @@
                             :beer_data :only
                             {:_id false
                              :review_profileName true})))))
+
+(def allbeers 
+  (distinct (flatten (map vals 
+                          (cm/fetch 
+                            :beer_data :only
+                            {:_id false
+                             :beer_name true})))))
 
 ;;get cleaned data for n users
 ;;transformation needed
