@@ -18,12 +18,13 @@
   (into (empty m) (for [[k v] m] [(name k) v])))
 
 ;;fetch users from database
-;;not working!!!!!!!!
 (def users (atom 
-             (string-keys 
-               (for [x (keys (into {} (cm/fetch :users :only {:_id false})))]
-                 (assoc-in (into {} 
-                               (cm/fetch :users :only {:_id false})) [x :roles] #{::user})))))
+               (into {}(let [map (cm/fetch :userst :only {:_id false})
+                 users {}]
+               (for [x map]  
+                 (if (= ["user"] (get x :roles))
+                 (assoc users  (:username (into {} x)) (assoc (into {} x) :roles #{::user}))
+                 (assoc users  (:username (into {} x)) (assoc (into {} x) :roles #{::admin}))))))))
 
 (derive ::admin ::user)
 
@@ -75,7 +76,7 @@
   (cm/close-connection conn))
 
 
-
+(comment
 (def local-users (atom {"user" {:username "user"
                             :password (creds/hash-bcrypt "pass")
                             :roles #{::user}}
@@ -84,9 +85,13 @@
                                   :roles #{::admin}}}))
 
 (derive ::admin ::user)
+)
 
 
-
+(cm/insert! :userst
+           {:username "admin"
+                            :password (creds/hash-bcrypt "pass")
+                            :roles #{"admin"}})
 
 
 

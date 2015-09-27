@@ -9,7 +9,7 @@
             [cemerick.friend :as friend]
             [cemerick.friend.credentials :as creds]
             [cemerick.friend.workflows :as workflows]
-            [server.clj-db :as users :refer (local-users)]
+            [server.clj-db :as users :refer (users)]
             [input.csv-dataset :as ds]))
 
 
@@ -57,7 +57,7 @@
    (friend/authenticate beer-routes
    			{:allow-anon? true
          :default-landing-uri "/"                                      
-         :credential-fn #(creds/bcrypt-credential-fn @local-users %)
+         :credential-fn #(creds/bcrypt-credential-fn @users %)
          :workflows [(workflows/interactive-form)]})))
 
 
