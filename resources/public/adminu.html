@@ -16,14 +16,17 @@
 
     <!-- Custom CSS -->
     <link href="css/mainstyle.css" rel="stylesheet" type='text/css'>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-	<link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
-	<link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-	<link href='css/admin_user.css' rel='stylesheet' type='text/css'>
-	
-	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
-	<script src="js/login.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+    
+    <link href='css/admin_user.css' rel='stylesheet' type='text/css'>
+
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="js/login.js"></script>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -60,33 +63,56 @@
 
         <!-- Page Content -->
 <div class="text-center">
-	<div class="logo">register new user</div>
+    <div class="logo">register new user</div>
 
-	<div class="login-form-1">
-		<form id="register-form" class="text-left" action="/addUser" method="POST">
-			<div class="login-form-main-message"></div>
-			<div class="main-login-form">
-				<div class="login-group">
-					<div class="form-group">
-						<label for="reg_username" class="sr-only">Username</label>
-						<input type="text" class="form-control" id="reg_username" name="reg_username" placeholder="username">
-					</div>
-					<div class="form-group">
-						<label for="reg_password" class="sr-only">Password</label>
-						<input type="password" class="form-control" id="reg_password" name="reg_password" placeholder="password">
-					</div>
-					<div class="form-group">
-						<label for="reg_password_confirm" class="sr-only">Password Confirm</label>
-						<input type="password" class="form-control" id="reg_password_confirm" name="reg_password_confirm" placeholder="confirm password">
-					</div>
-				</div>
-				<button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>
-			</div>
-		</form>
-	</div>
-
+    <div class="login-form-1">
+        <form id="register-form" class="text-left" action="/addUser" method="POST">
+            <div class="login-form-main-message"></div>
+            <div class="main-login-form">
+                <div class="login-group">
+                    <div class="form-group">
+                        <label for="username" class="sr-only">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="sr-only">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password_confirm" class="sr-only">Password Confirm</label>
+                        <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="confirm password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="role" class="sr-only">Password Confirm</label>
+                        <input type="text" class="form-control" id="role" name="role" placeholder="role" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </form>
+    </div>
+    <div class="logo" style="padding-top:30px;">existing users</div>
+    <div>
+        <table id="user-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th> 
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="un"></td>  
+                    <td id="rl"></td>
+                    <td><button class="editbtn">Edit</button><button class="deletebtn">Delete</button></td> 
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
         <!-- /#page-content-wrapper -->
+
 
     </div>
     <!-- /#wrapper -->
@@ -103,8 +129,46 @@
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
     });
-    </script>
+    
 
+      $('.editbtn').click(function () {
+          var currentTD = $(this).parents('tr').find('td');
+          if ($(this).html() == 'Edit') {                  
+              $.each(currentTD, function () {
+                  $(this).prop('contenteditable', true)
+              });
+          } else {
+             $.each(currentTD, function () {
+                  $(this).prop('contenteditable', false)                  
+              });             
+              var tableData = $(this).parents("tr").find('td').map(function() {
+                return $(this).text();
+                }).get();
+
+                $.ajax({url: "/editUser", data: {username : $.trim(tableData[0]), role : $.trim(tableData[1])}, type: 'POST', success: function(result){
+                        alert(result);
+                    }});        
+          }
+
+          $(this).html($(this).html() == 'Edit' ? 'Save' : 'Edit')
+
+      });
+      
+          $('.deletebtn').click(function () {
+          var currentTD = $(this).parents('tr').find('td');
+                  
+              var tableData = $(this).parents("tr").find('td').map(function() {
+                return $(this).text();
+                }).get();
+
+                $.ajax({url: "/deleteUser", data: {username : $.trim(tableData[0])}, type: 'POST', success: function(result){
+                        alert(result);
+                    }});        
+
+      });
+
+    </script>
 </body>
+
 
 </html>

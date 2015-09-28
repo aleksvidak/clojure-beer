@@ -284,3 +284,22 @@ label:hover:before {
   color: #aaaaaa;
   font-weight: bold;
 }
+
+#user-table {
+    border: 1px solid grey;
+    margin:30px auto 0px auto;
+    width:60%;
+}
+
+#user-table th {
+    text-align:center;
+    width:33%;
+    border: 2px solid grey;
+}
+
+table, th, td {
+    border: 1px solid grey;
+    border-color:#aaaaaa;
+    font-family: 'Varela Round';
+    color:#aaaaaa;
+}

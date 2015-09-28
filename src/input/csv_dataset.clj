@@ -26,7 +26,8 @@
 ;;set connection globally
 (cm/set-connection! connection)
 (cm/set-write-concern connection :strict)
-;;insert dataset read from .csv file
+
+;;initial insertion of dataset read from .csv file
 (dorun (cm/mass-insert! :beer_data (:rows data)))
 
 ;;retrieving inserted dataset

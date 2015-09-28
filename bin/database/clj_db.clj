@@ -1,6 +1,7 @@
-(ns server.clj-db
+(ns database.clj-db
    (:require [somnium.congomongo :as cm]
-             [cemerick.friend.credentials :as creds]))
+             [cemerick.friend.credentials :as creds]
+             [ring.util.response :as resp]))
 
 ;;define connection to db beerdb 
 (def connection
@@ -12,86 +13,72 @@
 (cm/set-connection! connection)
 (cm/set-write-concern connection :strict)
 
+;;disconnect
+(defn disconnect [conn]
+  "Disconnect from database."
+  (cm/close-connection conn))
 
-;;change keywords to strings, because of cemerick.friend required formated data
-(defn string-keys [m]
-  (into (empty m) (for [[k v] m] [(name k) v])))
+;;initial admin username "admin", password "pass"
+(defn insert-admin []
+  "Initially insert user with admin role to be able to use the application."
+  (cm/insert! :users 
+              {:username "admin"
+                            :password (creds/hash-bcrypt "pass")
+                            :roles #{"admin"}}))
 
 ;;fetch users from database
 (def users (atom 
-               (into {}(let [map (cm/fetch :userst :only {:_id false})
+               (into {}(let [map (cm/fetch :users :only {:_id false})
                  users {}]
                (for [x map]  
                  (if (= ["user"] (get x :roles))
                  (assoc users  (:username (into {} x)) (assoc (into {} x) :roles #{::user}))
                  (assoc users  (:username (into {} x)) (assoc (into {} x) :roles #{::admin}))))))))
 
+;;to bypass restriction of user pages to admin
 (derive ::admin ::user)
-
-;;initial admin username "admin", password "pass"
-(defn insert-admin []
-  (cm/insert! :users 
-              {"admin" {:username "admin"
-                            :password (creds/hash-bcrypt "pass")
-                            :roles #{"admin"}}}))
 
 
 ;;check if user exists in fetched users
-(defn user-exists? [username] 
+(defn user-exists? [username]
+  "Check if user with supplied username exists in the database."
   (if (not= 0 (count 
                 (filter not-empty 
-                        (cm/fetch :users :only {:_id false (keyword username) true})))) true false))
+                        (cm/fetch :users :only {:_id false} :where {:username username})))) true false))
 
 
   
 ;;insert data for the user into db - collection users
-(defn insert-user [username password roles]
+(defn insert-user [username password role]
   "Insert new user under condition that there isn't another one with same username."
   (if-not (user-exists? username)
-    (cm/insert! :users
-           {username {:username username
+    (do (cm/insert! :users 
+              {:username username
                             :password (creds/hash-bcrypt password)
-                            :roles #{roles}}})))
+                            :roles #{role}}) "User exists!"
+      (resp/redirect "/admin"))
+    (resp/redirect "/adminb")))
 
 
 ;;get all users in users collection 
 (defn get-all-users []
-  (string-keys 
-               (assoc-in (into {} 
-                               (cm/fetch :users :only {:_id false})) [:user :roles] #{::user})))
+  "Get all users in :users collection from mongodb."
+  (cm/fetch :users :only {:_id false :password false}))
 
 ;;get user by supplied username
 (defn get-user [username]
-  (filter not-empty (cm/fetch :users :only {:_id false (keyword username) true})))
+  (filter not-empty (cm/fetch :users :only {:_id false} :where {:username username})))
+
+;;update user data
+(defn update-user [username password role]
+  "Update user password & role."
+             (let [old-user (cm/fetch-one :users :where {:username username})]
+               (cm/update! :users old-user (merge old-user {:password (creds/hash-bcrypt password) :roles #{role}}))))
 
 ;;delete user with supplied username
 (defn delete-user [username]
   "Delete user with supplied username."
   (cm/destroy! :users {:username username}))
-
-
-;;disconnect
-(defn disconnect [conn]
-  "Disconnect from database."
-  (cm/close-connection conn))
-
-
-(comment
-(def local-users (atom {"user" {:username "user"
-                            :password (creds/hash-bcrypt "pass")
-                            :roles #{::user}}
-                  "admin" {:username "admin"
-                                  :password (creds/hash-bcrypt "pass")
-                                  :roles #{::admin}}}))
-
-(derive ::admin ::user)
-)
-
-
-(cm/insert! :userst
-           {:username "admin"
-                            :password (creds/hash-bcrypt "pass")
-                            :roles #{"admin"}})
 
 
 
