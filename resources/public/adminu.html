@@ -11,22 +11,21 @@
 
     <title>Add new beer to the system</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" type='text/css'>
-
-    <!-- Custom CSS -->
-    <link href="css/mainstyle.css" rel="stylesheet" type='text/css'>
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
-    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-    
+       
+    <!-- Custom CSS -->
+    <link href="css/mainstyle.css" rel="stylesheet" type='text/css'>  
     <link href='css/admin_user.css' rel='stylesheet' type='text/css'>
-
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-    <script src="js/login.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <script src="js/admin.js"></script>
+    
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -57,6 +56,9 @@
                 <li>
                     <a href="/about">About</a>
                 </li>
+                <li>
+                    <a href="/logout">Logout</a>
+                </li>
             </ul>
         </div>
         <!-- /#sidebar-wrapper -->
@@ -65,11 +67,11 @@
 <div class="text-center">
     <div class="logo">register new user</div>
 
-    <div class="login-form-1">
-        <form id="register-form" class="text-left" action="/addUser" method="POST">
-            <div class="login-form-main-message"></div>
-            <div class="main-login-form">
-                <div class="login-group">
+    <div class="save-form-1">
+        <form id="register-form" class="text-left">
+            <div class="save-form-main-message"></div>
+            <div class="main-save-form">
+                <div class="save-group">
                     <div class="form-group">
                         <label for="username" class="sr-only">Username</label>
                         <input type="text" class="form-control" id="username" name="username" placeholder="username" required>
@@ -87,7 +89,7 @@
                         <input type="text" class="form-control" id="role" name="role" placeholder="role" required>
                     </div>
                 </div>
-                <button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>
+                <button type="submit" class="savebtn"><i class="fa fa-chevron-right"></i></button>
             </div>
         </form>
     </div>
@@ -105,7 +107,11 @@
                 <tr>
                     <td id="un"></td>  
                     <td id="rl"></td>
-                    <td><button class="editbtn">Edit</button><button class="deletebtn">Delete</button></td> 
+                    <td>
+                        <button class="editbtn">Edit</button>
+                        <button class="deletebtn">Delete</button>
+                        <button type="button" data-toggle="modal" data-target="#myModal" class="showModal">Reset Psswd</button>
+                    </td> 
                 </tr>
             </tbody>
         </table>
@@ -117,11 +123,6 @@
     </div>
     <!-- /#wrapper -->
 
-    <!-- jQuery -->
-    <script src="js/jquery.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
 
     <!-- Menu Toggle Script -->
     <script>
@@ -154,20 +155,65 @@
 
       });
       
-          $('.deletebtn').click(function () {
-          var currentTD = $(this).parents('tr').find('td');
-                  
+          $('.deletebtn').click(function () {                
               var tableData = $(this).parents("tr").find('td').map(function() {
                 return $(this).text();
                 }).get();
 
                 $.ajax({url: "/deleteUser", data: {username : $.trim(tableData[0])}, type: 'POST', success: function(result){
                         alert(result);
+                        window.location.reload();
                     }});        
+
+      });
+      
+                $('.savebtn').click(function (event) {
+                event.preventDefault();
+                var un = document.getElementById("username").value;
+                var ps = document.getElementById("password").value;
+                var rl = document.getElementById("role").value;  
+
+                $.ajax({url: "/addUser", data: {username : un, password : ps, role : rl}, type: 'POST', success: function(result){
+                        alert(result);
+                        window.location.reload();
+                        
+                    }});        
+
+      });
+      
+
+      
+         $('.showModal').click(function (event) {
+                var tableData = $(this).parents("tr").find('td').map(function() {
+                return $(this).text();
+                }).get();
+                $(".modal-body #unreset").val($.trim(tableData[0]));
 
       });
 
     </script>
+    
+  <div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Edit user</h4>
+      </div>
+      <div class="modal-body">
+        Username: <input type="text" id="unreset" required disabled></input>
+        Password: <input type="password" id="psreset" required></input>
+      </div>
+      <div class="modal-footer">
+        <button class="rstbtn">Reset password</button>
+        <button class="clsbtn" type="button" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 </body>
 
 

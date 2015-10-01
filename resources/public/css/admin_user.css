@@ -12,7 +12,7 @@ Last change	: 2015/03/27
 2. Anchor Link
 3. Text Outside the Box
 4. Main Form
-5. Login Button
+5. save Button
 6. Form Invalid
 7. Form - Main Message
 8. Custom Checkbox & Radio
@@ -34,23 +34,23 @@ a:hover {
   text-decoration: none;
 }
 /*=== 3. Text Outside the Box ===*/
-.etc-login-form {
+.etc-save-form {
   color: #919191;
   padding: 10px 20px;
 }
-.etc-login-form p {
+.etc-save-form p {
   margin-bottom: 5px;
 }
 /*=== 4. Main Form ===*/
-.login-form-1 {
+.save-form-1 {
   max-width: 300px;
   border-radius: 5px;
   display: inline-block;
 }
-.main-login-form {
+.main-save-form {
   position: relative;
 }
-.login-form-1 .form-control {
+.save-form-1 .form-control {
   border: 0;
   box-shadow: 0 0 0;
   border-radius: 0;
@@ -60,34 +60,34 @@ a:hover {
   font-weight: bold;
   height:auto;
 }
-.login-form-1 .form-control::-webkit-input-placeholder {
+.save-form-1 .form-control::-webkit-input-placeholder {
   color: #999999;
 }
-.login-form-1 .form-control:-moz-placeholder,
-.login-form-1 .form-control::-moz-placeholder,
-.login-form-1 .form-control:-ms-input-placeholder {
+.save-form-1 .form-control:-moz-placeholder,
+.save-form-1 .form-control::-moz-placeholder,
+.save-form-1 .form-control:-ms-input-placeholder {
   color: #999999;
 }
-.login-form-1 .form-group {
+.save-form-1 .form-group {
   margin-bottom: 0;
   border-bottom: 2px solid #efefef;
   padding-right: 20px;
   position: relative;
 }
-.login-form-1 .form-group:last-child {
+.save-form-1 .form-group:last-child {
   border-bottom: 0;
 }
-.login-group {
+.save-group {
   background: #ffffff;
   color: #999999;
   border-radius: 8px;
   padding: 10px 20px;
 }
-.login-group-checkbox {
+.save-group-checkbox {
   padding: 5px 0;
 }
-/*=== 5. Login Button ===*/
-.login-form-1 .login-button {
+/*=== 5. Save Button ===*/
+.save-form-1 .savebtn {
   position: absolute;
   right: -25px;
   top: 50%;
@@ -101,20 +101,20 @@ a:hover {
   border-radius: 50%;
   transition: all ease-in-out 500ms;
 }
-.login-form-1 .login-button:hover {
+.save-form-1 .savebtn:hover {
   color: #555555;
   transform: rotate(450deg);
 }
-.login-form-1 .login-button.clicked {
+.save-form-1 .savebtn.clicked {
   color: #555555;
 }
-.login-form-1 .login-button.clicked:hover {
+.save-form-1 .savebtn.clicked:hover {
   transform: none;
 }
-.login-form-1 .login-button.clicked.success {
+.save-form-1 .savebtn.clicked.success {
   color: #2ecc71;
 }
-.login-form-1 .login-button.clicked.error {
+.save-form-1 .savebtn.clicked.error {
   color: #e74c3c;
 }
 /*=== 6. Form Invalid ===*/
@@ -146,7 +146,7 @@ label.form-invalid:after {
   border-width: 6px;
 }
 /*=== 7. Form - Main Message ===*/
-.login-form-main-message {
+.save-form-main-message {
   background: #ffffff;
   color: #999999;
   border-left: 3px solid transparent;
@@ -158,15 +158,15 @@ label.form-invalid:after {
   opacity: 0;
   transition: all ease-in-out 200ms;
 }
-.login-form-main-message.show {
+.save-form-main-message.show {
   height: auto;
   opacity: 1;
   padding: 10px 20px 10px 17px;
 }
-.login-form-main-message.success {
+.save-form-main-message.success {
   border-left-color: #2ecc71;
 }
-.login-form-main-message.error {
+.save-form-main-message.error {
   border-left-color: #e74c3c;
 }
 /*=== 8. Custom Checkbox & Radio ===*/

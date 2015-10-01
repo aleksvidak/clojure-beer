@@ -35,8 +35,15 @@
                  (assoc users  (:username (into {} x)) (assoc (into {} x) :roles #{::user}))
                  (assoc users  (:username (into {} x)) (assoc (into {} x) :roles #{::admin}))))))))
 
-;;to bypass restriction of user pages to admin
-(derive ::admin ::user)
+;;update users after updating fields in users collection
+(defn update-users []
+  (reset! users  
+               (into {}(let [map (cm/fetch :users :only {:_id false})
+                 users {}]
+               (for [x map]  
+                 (if (= ["user"] (get x :roles))
+                 (assoc users  (:username (into {} x)) (assoc (into {} x) :roles #{::user}))
+                 (assoc users  (:username (into {} x)) (assoc (into {} x) :roles #{::admin}))))))))
 
 
 ;;check if user exists in fetched users
@@ -55,9 +62,9 @@
     (do (cm/insert! :users 
               {:username username
                             :password (creds/hash-bcrypt password)
-                            :roles #{role}}) "User exists!"
-      (resp/redirect "/admin"))
-    (resp/redirect "/adminb")))
+                            :roles #{role}})
+    (resp/response "User added to the database!"))
+    (resp/response "User is already in the database!")))
 
 
 ;;get all users in users collection 
@@ -70,16 +77,27 @@
   (filter not-empty (cm/fetch :users :only {:_id false} :where {:username username})))
 
 ;;update user data
-(defn update-user [username password role]
+(defn update-user [username role]
   "Update user password & role."
-             (let [old-user (cm/fetch-one :users :where {:username username})]
-               (cm/update! :users old-user (merge old-user {:password (creds/hash-bcrypt password) :roles #{role}}))))
+  (let [old-user (cm/fetch-one :users :where {:username username})]
+    (do
+      (cm/update! :users old-user (merge old-user {:roles #{role}}))
+      (resp/response "User updated!"))))
+
+;;delete user with supplied username
+(defn reset-password [username password]
+  "Reset user password."
+  (let [user (cm/fetch-one :users :where {:username username})]
+    (do
+      (cm/update! :users user (merge user {:password (creds/hash-bcrypt password)}))
+      (resp/response "Pasword sucessfully reset!"))))
 
 ;;delete user with supplied username
 (defn delete-user [username]
   "Delete user with supplied username."
-  (cm/destroy! :users {:username username}))
-
+  (do 
+    (cm/destroy! :users {:username username})
+    (resp/response "User deleted!")))
 
 
 
