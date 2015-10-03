@@ -20,15 +20,15 @@ From the begining of my work on this application I tried to widen my knowledge o
 After finishing the project I can say I learned a lot and I look forward to incorporating my Java Web Service for extracting keywords & keyphrases into some future Clojure project.
 
 ##References
-Dataset transformation http://blog.bruggen.com/2015/04/importing-snap-beeradvocate-dataset.html
-Mongodb https://docs.mongodb.org/manual/
-Login form http://bootsnipp.com/snippets/featured/custom-login-registration-amp-forgot-password
-Importing dataset into mongodb http://data-sorcery.org/2010/01/03/datasets_mongodb/
-Recommendations http://nakkaya.com/2009/11/11/euclidean-distance-score/
-https://github.com/cgrand/enlive
-https://github.com/ring-clojure/ring
-https://github.com/weavejester/compojure
-https://github.com/aboekhoff/congomongo
+- Dataset transformation http://blog.bruggen.com/2015/04/importing-snap-beeradvocate-dataset.html
+- Mongodb https://docs.mongodb.org/manual/
+- Login form http://bootsnipp.com/snippets/featured/custom-login-registration-amp-forgot-password
+- Importing dataset into mongodb http://data-sorcery.org/2010/01/03/datasets_mongodb/
+- Recommendations http://nakkaya.com/2009/11/11/euclidean-distance-score/
+- https://github.com/cgrand/enlive
+- https://github.com/ring-clojure/ring
+- https://github.com/weavejester/compojure
+- https://github.com/aboekhoff/congomongo
 
 ## License
 
