@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Add new beer to the system</title>
+
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+       
+    <!-- Custom CSS -->
+    <link href="css/mainstyle.css" rel="stylesheet" type='text/css'>  
+    <link href='css/admin_user.css' rel='stylesheet' type='text/css'>
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <script src="js/admin.js"></script>
+    
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Beer Reviews
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin">User Dashboard</a>
+                </li>
+                <li>
+                    <a href="/adminb">Beer Dashboard</a>
+                </li>
+                <li>
+                    <a href="/about">About</a>
+                </li>
+                <li>
+                    <a href="/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+<div class="text-center">
+    <div class="logo">register new user</div>
+
+    <div class="save-form-1">
+        <form id="register-form" class="text-left">
+            <div class="save-form-main-message"></div>
+            <div class="main-save-form">
+                <div class="save-group">
+                    <div class="form-group">
+                        <label for="username" class="sr-only">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="sr-only">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password_confirm" class="sr-only">Password Confirm</label>
+                        <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="confirm password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="role" class="sr-only">Password Confirm</label>
+                        <input type="text" class="form-control" id="role" name="role" placeholder="role" required>
+                    </div>
+                </div>
+                <button type="submit" class="savebtn"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </form>
+    </div>
+    <div class="logo" style="padding-top:30px;">existing users</div>
+    <div>
+        <table id="user-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th> 
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="un"></td>  
+                    <td id="rl"></td>
+                    <td>
+                        <button class="editbtn">Edit</button>
+                        <button class="deletebtn">Delete</button>
+                        <button type="button" data-toggle="modal" data-target="#myModal" class="showModal">Reset Psswd</button>
+                    </td> 
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+        <!-- /#page-content-wrapper -->
+
+
+    </div>
+    <!-- /#wrapper -->
+
+
+    <!-- Menu Toggle Script -->
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    
+
+      $('.editbtn').click(function () {
+          var currentTD = $(this).parents('tr').find('td');
+          if ($(this).html() == 'Edit') {                  
+              $.each(currentTD, function () {
+                  $(this).prop('contenteditable', true)
+              });
+          } else {
+             $.each(currentTD, function () {
+                  $(this).prop('contenteditable', false)                  
+              });             
+              var tableData = $(this).parents("tr").find('td').map(function() {
+                return $(this).text();
+                }).get();
+
+                $.ajax({url: "/editUser", data: {username : $.trim(tableData[0]), role : $.trim(tableData[1])}, type: 'POST', success: function(result){
+                        alert(result);
+                    }});        
+          }
+
+          $(this).html($(this).html() == 'Edit' ? 'Save' : 'Edit')
+
+      });
+      
+          $('.deletebtn').click(function () {                
+              var tableData = $(this).parents("tr").find('td').map(function() {
+                return $(this).text();
+                }).get();
+
+                $.ajax({url: "/deleteUser", data: {username : $.trim(tableData[0])}, type: 'POST', success: function(result){
+                        alert(result);
+                        window.location.reload();
+                    }});        
+
+      });
+      
+                $('.savebtn').click(function (event) {
+                event.preventDefault();
+                var un = document.getElementById("username").value;
+                var ps = document.getElementById("password").value;
+                var rl = document.getElementById("role").value;  
+
+                $.ajax({url: "/addUser", data: {username : un, password : ps, role : rl}, type: 'POST', success: function(result){
+                        alert(result);
+                        window.location.reload();
+                        
+                    }});        
+
+      });
+      
+
+      
+         $('.showModal').click(function (event) {
+                var tableData = $(this).parents("tr").find('td').map(function() {
+                return $(this).text();
+                }).get();
+                $(".modal-body #unreset").val($.trim(tableData[0]));
+
+      });
+
+    </script>
+    
+  <div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Edit user</h4>
+      </div>
+      <div class="modal-body">
+        Username: <input type="text" id="unreset" required disabled></input>
+        Password: <input type="password" id="psreset" required></input>
+      </div>
+      <div class="modal-footer">
+        <button class="rstbtn">Reset password</button>
+        <button class="clsbtn" type="button" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+
+
+</html>

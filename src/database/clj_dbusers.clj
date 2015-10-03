@@ -1,4 +1,4 @@
-(ns database.clj-db
+(ns database.clj-dbusers
    (:require [somnium.congomongo :as cm]
              [cemerick.friend.credentials :as creds]
              [ring.util.response :as resp]))
@@ -18,13 +18,6 @@
   "Disconnect from database."
   (cm/close-connection conn))
 
-;;initial admin username "admin", password "pass"
-(defn insert-admin []
-  "Initially insert user with admin role to be able to use the application."
-  (cm/insert! :users 
-              {:username "admin"
-                            :password (creds/hash-bcrypt "pass")
-                            :roles #{"admin"}}))
 
 ;;fetch users from database
 (def users (atom 
