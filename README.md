@@ -3,7 +3,7 @@
 This is a web application designed to provide users manipulation with beer data acquired from www.beeradvocate.com website. It is written in Clojure using enlive, ring, compojure, incanter and friend libraries.
 
 This web application allows users with user privileges to score beers and get user & beer recommendations based on their beer scoring.
-It also allows users with admin privileges to create create new users (admins or users), edit them & delete them. Admins can create new beers & delete existing ones.
+It also allows users with admin privileges to create new users (admins or users), edit them & delete them. Admins can create new beers & delete existing ones.
 
 The dataset is acquired from http://jmcauley.ucsd.edu/cse255/data/beer/ url and it is about 1.5GB large after unpacking it. Because of the great amount of data stored in the file it is hard to manipulate the file. It was necessary to split file into smaller chunks of data so the process of changing the data structure could be possible. I used split bash command to divide the file into pieces of 100MB. 
 Then I needed to get these chunks into a .csv format that I could import into mongodb. I needed to go from a structure that had records in blocks of 14 lines, with a property field on every line to a .csv file that had a row per record, and fields in comma-separated columns. I used google-refine tool to do that. I used the incanter library to read the .csv file and congomongo to insert it into the mongodb beer_data collection.
